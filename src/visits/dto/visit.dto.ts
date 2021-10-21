@@ -5,6 +5,6 @@ export class VisitDTO {
   vehicleId?: number;
   driverId?: number;
   securityId?: number;
-  checkIn: Timestamp;
-  checkOut?: Timestamp;
+  checkIn: Date;
+  checkOut?: Date;
 }

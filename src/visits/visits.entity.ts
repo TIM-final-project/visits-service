@@ -29,14 +29,15 @@ export class VisitEntity {
 
   @Column({
     nullable: false,
-    default: () => 'CURRENT_TIMESTAMP'
+    type: 'timestamptz'
   })
-  checkIn: Timestamp;
+  checkIn: Date;
 
   @Column({
     nullable: true,
+    type: 'timestamptz'
   })
-  checkOut?: Timestamp;
+  checkOut?: Date;
 
   @CreateDateColumn()
   created_at: Date;

@@ -1,5 +1,6 @@
 import { Controller, Logger } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
+import { CheckInVisitDTO } from './dto/checkin-visit.dto';
 import { VisitDTO } from './dto/visit.dto';
 import { Header } from './interfaces/header.interface';
 import { VisitQPs } from './qps/visit.qps';
@@ -24,4 +25,11 @@ export class VisitsController {
     this.logger.debug('Get Visit by id ', { id, visitQPs });
     return await this.visitsService.findOne(id, visitQPs);
   }
+
+  @MessagePattern('visit_create')
+  async create(dto: CheckInVisitDTO): Promise<VisitDTO> {
+    this.logger.debug('Attempting to create visit for', dto);
+    return this.visitsService.create(dto.securityId, dto.driverId, dto.vehicleId);
+  }
+
 }

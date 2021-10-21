@@ -1,7 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { RpcException } from '@nestjs/microservices';
+import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { VisitDTO } from './dto/visit.dto';
 import { VisitQPs } from './qps/visit.qps';
 import { VisitEntity } from './visits.entity';
 
@@ -41,4 +42,35 @@ export class VisitsService {
       });
     }
   }
+
+  create(securityId: number, driverId: number, vehicleId: number): Promise<VisitDTO> {
+    const visitVehicle = this.visitRepository.find({
+      where: {
+        vehicleId: vehicleId,
+        active: true,
+      }
+    });
+    if(visitVehicle){
+      throw new RpcException({message: "El vehiculo ya posee una visita activa", status: HttpStatus.FORBIDDEN})
+    }
+
+    const visitDriver = this.visitRepository.find({
+      where: {
+        vehicleId: vehicleId,
+        active: true,
+      }
+    });
+    if(visitDriver){
+      throw new RpcException({message: "El conductor ya posee una visita activa", status: HttpStatus.FORBIDDEN})
+    }
+    
+    return this.visitRepository.save({
+      driverId,
+      securityId,
+      vehicleId,
+      checkOut: null
+    });
+  
+  }
+
 }
