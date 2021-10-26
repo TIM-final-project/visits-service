@@ -43,24 +43,26 @@ export class VisitsService {
     }
   }
 
-  create(securityId: number, driverId: number, vehicleId: number): Promise<VisitDTO> {
-    const visitVehicle = this.visitRepository.find({
+  async create(securityId: number, driverId: number, vehicleId: number): Promise<VisitDTO> {
+    const visitVehicle: VisitEntity[] = await this.visitRepository.find({
       where: {
         vehicleId: vehicleId,
         active: true,
       }
     });
-    if(visitVehicle){
+
+    if(visitVehicle.length){
+      this.logger.debug(visitVehicle);
       throw new RpcException({message: "El vehiculo ya posee una visita activa", status: HttpStatus.FORBIDDEN})
     }
-
-    const visitDriver = this.visitRepository.find({
+    const visitDriver: VisitEntity[] = await this.visitRepository.find({
       where: {
         vehicleId: vehicleId,
         active: true,
       }
     });
-    if(visitDriver){
+
+    if(visitDriver.length){
       throw new RpcException({message: "El conductor ya posee una visita activa", status: HttpStatus.FORBIDDEN})
     }
     

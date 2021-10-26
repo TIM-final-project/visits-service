@@ -3,11 +3,10 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
-  Timestamp,
   UpdateDateColumn,
 } from 'typeorm';
 
-Entity();
+@Entity()
 export class VisitEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -29,13 +28,16 @@ export class VisitEntity {
 
   @Column({
     nullable: false,
-    type: 'timestamptz'
+    update: false,
+    type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP"
   })
   checkIn: Date;
 
   @Column({
     nullable: true,
-    type: 'timestamptz'
+    type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP"
   })
   checkOut?: Date;
 

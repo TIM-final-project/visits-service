@@ -21,9 +21,9 @@ export class VisitsController {
   }
 
   @MessagePattern('visits_find_one')
-  async findOne({id, visitQPs}: Header): Promise<VisitDTO> {
+  findOne({id, visitQPs}: Header): Promise<VisitDTO> {
     this.logger.debug('Get Visit by id ', { id, visitQPs });
-    return await this.visitsService.findOne(id, visitQPs);
+    return this.visitsService.findOne(id, visitQPs);
   }
 
   @MessagePattern('visit_create')
