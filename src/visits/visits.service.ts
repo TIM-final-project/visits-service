@@ -15,6 +15,8 @@ export class VisitsService {
   ) {}
 
   findAll(visitQPs: VisitQPs): Promise<VisitEntity[]> {
+    // TODO: change QPs to compare checkin and checkout date.
+    // Add QP to to get only todays visit.
     return this.visitRepository.find({
       where: {
         ...visitQPs,
@@ -24,8 +26,9 @@ export class VisitsService {
   }
 
   async findOne(id: number, visitQPs?: VisitQPs): Promise<VisitEntity> {
-    this.logger.debug('Getting visit', { id , visitQPs });
+    this.logger.debug('Getting visit', { id, visitQPs });
 
+    // TODO: change QPs to compare checkin and checkout date.
     const visit = await this.visitRepository.findOne(id, {
       where: {
         ...visitQPs,
