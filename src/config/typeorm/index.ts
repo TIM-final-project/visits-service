@@ -4,15 +4,13 @@ import { TYPEORM } from '../../environments';
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
-	async createTypeOrmOptions(): Promise<TypeOrmModuleOptions> {
-		return {
-			...TYPEORM,
-			type: 'mysql',
-			entities: ['dist/**/*.entity{ .ts,.js}'],
-			synchronize: true,
-            autoLoadEntities: true,
-			keepConnectionAlive: true,
-			logging: true
-		};
-	}
+  async createTypeOrmOptions(): Promise<TypeOrmModuleOptions> {
+    return {
+      ...TYPEORM,
+      type: 'mysql',
+      entities: ['dist/**/*.entity{ .ts,.js}'],
+      autoLoadEntities: true,
+      keepConnectionAlive: true
+    };
+  }
 }
