@@ -41,7 +41,7 @@ export class VisitsService {
     } else {
       this.logger.error('Error Getting visit', { id });
       throw new RpcException({
-        message: `No existe un visita con el id: ${id}`,
+        message: `No existe un visita con el id: ${id}`
       });
     }
   }
@@ -49,16 +49,19 @@ export class VisitsService {
   getCheckOut(
     vehicleId: number,
     driverId: number,
-    checkOut: Date,
+    checkOut: Date
   ): Promise<VisitEntity[]> {
+    this.logger.debug('Getting checkout', { vehicleId, driverId, checkOut });
     const beginingOfDay: Date = new Date(checkOut);
     beginingOfDay.setHours(0, 0, 0);
     const where = {
       vehicleId,
       driverId,
       checkIn: Between(beginingOfDay, checkOut),
-      checkOut: null,
+      checkOut: null
     };
+
+    this.logger.debug('DB Query Where', { where });
 
     return this.visitRepository.find({ where });
   }
@@ -73,13 +76,13 @@ export class VisitsService {
       } catch (error) {
         this.logger.error('Error updating visit', { id });
         throw new RpcException({
-          message: `Ha ocurrido un error al actualizar la visita: ${id}`,
+          message: `Ha ocurrido un error al actualizar la visita: ${id}`
         });
       }
     } else {
       this.logger.error('Error creating visit', { id });
       throw new RpcException({
-        message: `No existe una visita con el id: ${id}`,
+        message: `No existe una visita con el id: ${id}`
       });
     }
   }

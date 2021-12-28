@@ -1,4 +1,4 @@
-import { Timestamp } from "typeorm";
+import { Timestamp } from 'typeorm';
 
 export class VisitDTO {
   id: number;
