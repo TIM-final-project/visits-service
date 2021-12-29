@@ -3,43 +3,42 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  Timestamp,
+  UpdateDateColumn
 } from 'typeorm';
-
 @Entity()
 export class VisitEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
-    nullable: false,
+    nullable: false
   })
   vehicleId: number;
 
   @Column({
-    nullable: false,
+    nullable: false
   })
   driverId: number;
 
   @Column({
-    nullable: false,
+    nullable: false
   })
   securityId: number;
 
   @Column({
     nullable: false,
     update: false,
-    type: "timestamp",
-    default: () => "CURRENT_TIMESTAMP"
+    default: () => 'CURRENT_TIMESTAMP',
+    type: 'timestamp'
   })
-  checkIn: Date;
+  checkIn: Timestamp;
 
   @Column({
     nullable: true,
-    type: "timestamp",
-    default: () => "CURRENT_TIMESTAMP"
+    type: 'timestamp'
   })
-  checkOut?: Date;
+  checkOut?: Timestamp;
 
   @CreateDateColumn()
   created_at: Date;
@@ -49,7 +48,7 @@ export class VisitEntity {
 
   @Column({
     nullable: false,
-    default: true,
+    default: true
   })
   active: boolean;
 }
