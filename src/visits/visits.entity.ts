@@ -28,6 +28,7 @@ export class VisitEntity {
 
   @Column({
     nullable: false,
+    update: false,
     default: () => 'CURRENT_TIMESTAMP',
     type: 'timestamp'
   })

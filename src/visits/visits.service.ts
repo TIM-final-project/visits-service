@@ -1,7 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, LessThan, Repository } from 'typeorm';
+import { VisitDTO } from './dto/visit.dto';
+import { Between, Repository } from 'typeorm';
 import { checkOutVisitDTO } from './dto/checkout-visit.dto';
 import { VisitQPs } from './qps/visit.qps';
 import { VisitEntity } from './visits.entity';
@@ -86,4 +87,37 @@ export class VisitsService {
       });
     }
   }
+
+  async create(securityId: number, driverId: number, vehicleId: number): Promise<VisitDTO> {
+    const visitVehicle: VisitEntity[] = await this.visitRepository.find({
+      where: {
+        vehicleId: vehicleId,
+        active: true,
+      }
+    });
+
+    if(visitVehicle.length){
+      this.logger.debug(visitVehicle);
+      throw new RpcException({message: "El vehiculo ya posee una visita activa", status: HttpStatus.FORBIDDEN})
+    }
+    const visitDriver: VisitEntity[] = await this.visitRepository.find({
+      where: {
+        vehicleId: vehicleId,
+        active: true,
+      }
+    });
+
+    if(visitDriver.length){
+      throw new RpcException({message: "El conductor ya posee una visita activa", status: HttpStatus.FORBIDDEN})
+    }
+    
+    return this.visitRepository.save({
+      driverId,
+      securityId,
+      vehicleId,
+      checkOut: null
+    });
+  
+  }
+
 }

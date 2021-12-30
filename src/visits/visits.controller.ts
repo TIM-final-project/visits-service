@@ -1,4 +1,5 @@
 import { Controller, Logger } from '@nestjs/common';
+import { CheckInVisitDTO } from './dto/checkin-visit.dto';
 import { MessagePattern, RpcException } from '@nestjs/microservices';
 import { VisitDTO } from './dto/visit.dto';
 import { checkOutInterface } from './interfaces/checkout.interface';
@@ -21,7 +22,13 @@ export class VisitsController {
   @MessagePattern('visits_find_one')
   async findOne({ id, visitQPs }: Header): Promise<VisitDTO> {
     this.logger.debug('Get Visit by id ', { id, visitQPs });
-    return await this.visitsService.findOne(id, visitQPs);
+    return this.visitsService.findOne(id, visitQPs);
+  }
+
+  @MessagePattern('visit_create')
+  async create(dto: CheckInVisitDTO): Promise<VisitDTO> {
+    this.logger.debug('Attempting to create visit for', dto);
+    return this.visitsService.create(dto.securityId, dto.driverId, dto.vehicleId);
   }
 
   @MessagePattern('visits_resource_exit')
