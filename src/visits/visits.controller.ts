@@ -6,12 +6,17 @@ import { checkOutInterface } from './interfaces/checkout.interface';
 import { Header } from './interfaces/header.interface';
 import { VisitQPs } from './qps/visit.qps';
 import { VisitsService } from './visits.service';
+import { ExceptionsDTO } from 'src/exceptions/exception.dto';
+import { ExceptionService } from 'src/exceptions/exception.service';
 
 @Controller('visits')
 export class VisitsController {
   private readonly logger = new Logger(VisitsController.name);
 
-  constructor(private visitsService: VisitsService) {}
+  constructor(
+    private visitsService: VisitsService,
+    private exceptionsService: ExceptionService
+  ) {}
 
   @MessagePattern('visits_find_all')
   async findAll(visitQPs: VisitQPs): Promise<VisitDTO[]> {
@@ -71,5 +76,15 @@ export class VisitsController {
         message: `Ha ocurrido un error al registrar la salida`
       });
     }
+  }
+
+  @MessagePattern('visits_exception')
+  async createException(dto: ExceptionsDTO ): Promise<VisitDTO>{
+    this.logger.debug('Attempting to create visit for', dto);
+    const visit: VisitDTO = await this.visitsService.create(dto.securityId, dto.driverId, dto.vehicleId);
+
+    this.exceptionsService.create(visit.id, dto.managerId, dto.observations);
+
+    return visit;
   }
 }
