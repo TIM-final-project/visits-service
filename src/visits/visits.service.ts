@@ -6,6 +6,7 @@ import { Between, Repository } from 'typeorm';
 import { checkOutVisitDTO } from './dto/checkout-visit.dto';
 import { VisitQPs } from './qps/visit.qps';
 import { VisitEntity } from './visits.entity';
+import { VisitEntitiesDTO } from './dto/visit-entities.dto';
 
 @Injectable()
 export class VisitsService {
@@ -25,6 +26,24 @@ export class VisitsService {
         active: true
       }
     });
+  }
+
+  async findAllEntities(): Promise<VisitEntitiesDTO> {
+    const visits : VisitEntity[] = await this.visitRepository.find({
+      where: {
+        active: true
+      }
+    });
+
+    let entities : {drivers : number[], vehicles: number[]} = {drivers: [],vehicles: []}
+
+    visits.forEach(v => {
+        entities.drivers.push(v.driverId);
+        entities.vehicles.push(v.vehicleId);
+    });
+
+    this.logger.debug(entities);
+    return entities;
   }
 
   async findOne(id: number, visitQPs?: VisitQPs): Promise<VisitEntity> {
