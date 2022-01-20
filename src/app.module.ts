@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './config';
+import { ExceptionsModule } from './exceptions/exception.module';
 import { VisitsModule } from './visits/visits.module';
 
 @Module({
@@ -10,7 +11,8 @@ import { VisitsModule } from './visits/visits.module';
       inject: [],
       useClass: TypeOrmConfigService
     }),
-    VisitsModule
+    VisitsModule,
+    ExceptionsModule
   ],
 })
 export class AppModule {}
