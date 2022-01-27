@@ -28,24 +28,6 @@ export class VisitsService {
     });
   }
 
-  async findAllEntities(): Promise<VisitEntitiesDTO> {
-    const visits : VisitEntity[] = await this.visitRepository.find({
-      where: {
-        active: true
-      }
-    });
-
-    let entities : {drivers : number[], vehicles: number[]} = {drivers: [],vehicles: []}
-
-    visits.forEach(v => {
-        entities.drivers.push(v.driverId);
-        entities.vehicles.push(v.vehicleId);
-    });
-
-    this.logger.debug(entities);
-    return entities;
-  }
-
   async findOne(id: number, visitQPs?: VisitQPs): Promise<VisitEntity> {
     this.logger.debug('Getting visit', { id, visitQPs });
 
@@ -66,10 +48,10 @@ export class VisitsService {
     }
   }
 
-  getCheckOut(
-    vehicleId: number,
-    driverId: number,
-    checkOut: Date
+  getActiveVisits(
+    checkOut?: Date,
+    vehicleId?: number,
+    driverId?: number
   ): Promise<VisitEntity[]> {
     this.logger.debug('Getting checkout', { vehicleId, driverId, checkOut });
     const beginingOfDay: Date = new Date(checkOut);
@@ -107,36 +89,44 @@ export class VisitsService {
     }
   }
 
-  async create(securityId: number, driverId: number, vehicleId: number): Promise<VisitDTO> {
+  async create(
+    securityId: number,
+    driverId: number,
+    vehicleId: number
+  ): Promise<VisitDTO> {
     const visitVehicle: VisitEntity[] = await this.visitRepository.find({
       where: {
         vehicleId: vehicleId,
-        active: true,
+        active: true
       }
     });
 
-    if(visitVehicle.length){
+    if (visitVehicle.length) {
       this.logger.debug(visitVehicle);
-      throw new RpcException({message: "El vehiculo ya posee una visita activa", status: HttpStatus.FORBIDDEN})
+      throw new RpcException({
+        message: 'El vehiculo ya posee una visita activa',
+        status: HttpStatus.FORBIDDEN
+      });
     }
     const visitDriver: VisitEntity[] = await this.visitRepository.find({
       where: {
         vehicleId: vehicleId,
-        active: true,
+        active: true
       }
     });
 
-    if(visitDriver.length){
-      throw new RpcException({message: "El conductor ya posee una visita activa", status: HttpStatus.FORBIDDEN})
+    if (visitDriver.length) {
+      throw new RpcException({
+        message: 'El conductor ya posee una visita activa',
+        status: HttpStatus.FORBIDDEN
+      });
     }
-    
+
     return this.visitRepository.save({
       driverId,
       securityId,
       vehicleId,
       checkOut: null
     });
-  
   }
-
 }

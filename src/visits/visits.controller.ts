@@ -26,9 +26,9 @@ export class VisitsController {
   }
 
   @MessagePattern('visits_find_all_entities')
-  async findAllEntities(): Promise<VisitEntitiesDTO> {
+  async findAllEntities(): Promise<VisitDTO[]> {
     this.logger.debug('Find all');
-    return this.visitsService.findAllEntities();
+    return this.visitsService.getActiveVisits(new Date());
   }
 
   @MessagePattern('visits_find_one')
@@ -40,7 +40,11 @@ export class VisitsController {
   @MessagePattern('visit_create')
   async create(dto: CheckInVisitDTO): Promise<VisitDTO> {
     this.logger.debug('Attempting to create visit for', dto);
-    return this.visitsService.create(dto.securityId, dto.driverId, dto.vehicleId);
+    return this.visitsService.create(
+      dto.securityId,
+      dto.driverId,
+      dto.vehicleId
+    );
   }
 
   @MessagePattern('visits_resource_exit')
@@ -51,10 +55,10 @@ export class VisitsController {
   }: checkOutInterface): Promise<VisitDTO> {
     this.logger.debug('Resource exiting ', { vehicleId, driverId, checkOut });
     try {
-      const checkIns = await this.visitsService.getCheckOut(
+      const checkIns = await this.visitsService.getActiveVisits(
+        checkOut,
         vehicleId,
-        driverId,
-        checkOut
+        driverId
       );
       if (!checkIns.length) {
         this.logger.error(
@@ -86,9 +90,13 @@ export class VisitsController {
   }
 
   @MessagePattern('visits_exception')
-  async createException(dto: ExceptionsDTO ): Promise<VisitDTO>{
+  async createException(dto: ExceptionsDTO): Promise<VisitDTO> {
     this.logger.debug('Attempting to create visit for', dto);
-    const visit: VisitDTO = await this.visitsService.create(dto.securityId, dto.driverId, dto.vehicleId);
+    const visit: VisitDTO = await this.visitsService.create(
+      dto.securityId,
+      dto.driverId,
+      dto.vehicleId
+    );
 
     this.exceptionsService.create(visit.id, dto.managerId, dto.observations);
 
