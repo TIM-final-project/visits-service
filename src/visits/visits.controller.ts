@@ -8,7 +8,6 @@ import { VisitQPs } from './qps/visit.qps';
 import { VisitsService } from './visits.service';
 import { ExceptionsDTO } from 'src/exceptions/exception.dto';
 import { ExceptionService } from 'src/exceptions/exception.service';
-import { VisitEntitiesDTO } from './dto/visit-entities.dto';
 
 @Controller('visits')
 export class VisitsController {

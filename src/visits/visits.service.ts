@@ -2,11 +2,10 @@ import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { VisitDTO } from './dto/visit.dto';
-import { Between, Repository } from 'typeorm';
+import { Between, LessThan, MoreThan, Repository } from 'typeorm';
 import { checkOutVisitDTO } from './dto/checkout-visit.dto';
 import { VisitQPs } from './qps/visit.qps';
 import { VisitEntity } from './visits.entity';
-import { VisitEntitiesDTO } from './dto/visit-entities.dto';
 import { ActiveVisitsQuery } from './interfaces/active-visits.query';
 
 @Injectable()
@@ -62,7 +61,7 @@ export class VisitsService {
     if (vehicleId) where.vehicleId = vehicleId;
     if (driverId) where.driverId = driverId;
     if (checkOut) {
-      where.checkIn = Between(beginingOfDay, checkOut);
+      where.checkIn = MoreThan(beginingOfDay);
     }
     where.checkOut = null;
 
