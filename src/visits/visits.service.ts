@@ -7,6 +7,7 @@ import { checkOutVisitDTO } from './dto/checkout-visit.dto';
 import { VisitQPs } from './qps/visit.qps';
 import { VisitEntity } from './visits.entity';
 import { VisitEntitiesDTO } from './dto/visit-entities.dto';
+import { ActiveVisitsQuery } from './interfaces/active-visits.query';
 
 @Injectable()
 export class VisitsService {
@@ -48,7 +49,7 @@ export class VisitsService {
     }
   }
 
-  getActiveVisits(
+  async getActiveVisits(
     checkOut?: Date,
     vehicleId?: number,
     driverId?: number
@@ -56,16 +57,21 @@ export class VisitsService {
     this.logger.debug('Getting checkout', { vehicleId, driverId, checkOut });
     const beginingOfDay: Date = new Date(checkOut);
     beginingOfDay.setHours(0, 0, 0);
-    const where = {
-      vehicleId,
-      driverId,
-      checkIn: Between(beginingOfDay, checkOut),
-      checkOut: null
-    };
+    const where: ActiveVisitsQuery = {};
+
+    if (vehicleId) where.vehicleId = vehicleId;
+    if (driverId) where.driverId = driverId;
+    if (checkOut) {
+      where.checkIn = Between(beginingOfDay, checkOut);
+    }
+    where.checkOut = null;
 
     this.logger.debug('DB Query Where', { where });
 
-    return this.visitRepository.find({ where });
+    const visits = await this.visitRepository.find({ where });
+
+    this.logger.debug(visits);
+    return visits;
   }
 
   async update(id: number, visitDto: checkOutVisitDTO): Promise<VisitEntity> {
