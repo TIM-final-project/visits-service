@@ -8,7 +8,6 @@ import { VisitQPs } from './qps/visit.qps';
 import { VisitsService } from './visits.service';
 import { ExceptionsDTO } from 'src/exceptions/exception.dto';
 import { ExceptionService } from 'src/exceptions/exception.service';
-import { VisitEntitiesDTO } from './dto/visit-entities.dto';
 
 @Controller('visits')
 export class VisitsController {
@@ -28,7 +27,9 @@ export class VisitsController {
   @MessagePattern('visits_find_all_entities')
   async findAllEntities(): Promise<VisitDTO[]> {
     this.logger.debug('Find all');
-    return this.visitsService.getActiveVisits(new Date());
+    const visits = await this.visitsService.getActiveVisits(new Date());
+    this.logger.debug(visits);
+    return visits;
   }
 
   @MessagePattern('visits_find_one')
