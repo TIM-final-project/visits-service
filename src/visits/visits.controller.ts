@@ -27,7 +27,7 @@ export class VisitsController {
   @MessagePattern('visits_find_all_entities')
   async findAllEntities(): Promise<VisitDTO[]> {
     this.logger.debug('Find all');
-    const visits = await this.visitsService.getActiveVisits(new Date());
+    const visits = await this.visitsService.findAll();
     this.logger.debug(visits);
     return visits;
   }
@@ -56,11 +56,7 @@ export class VisitsController {
   }: checkOutInterface): Promise<VisitDTO> {
     this.logger.debug('Resource exiting ', { vehicleId, driverId, checkOut });
     try {
-      const checkIns = await this.visitsService.getActiveVisits(
-        checkOut,
-        vehicleId,
-        driverId
-      );
+      const checkIns = await this.visitsService.findAll();
       if (!checkIns.length) {
         this.logger.error(
           'There are no checkIns from the pair vehicle/driver today.',
