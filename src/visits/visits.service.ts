@@ -52,6 +52,7 @@ export class VisitsService {
     const visit: VisitEntity = await this.visitRepository.findOne(id);
 
     if (visit) {
+      visit.active = false;
       this.visitRepository.merge(visit, visitDto);
       try {
         return await this.visitRepository.save(visit);
