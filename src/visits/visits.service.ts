@@ -17,7 +17,7 @@ export class VisitsService {
     private visitRepository: Repository<VisitEntity>
   ) {}
 
-  findAll(visitQPs: VisitQPs): Promise<VisitEntity[]> {
+  findAll(visitQPs?: VisitQPs): Promise<VisitEntity[]> {
     // TODO: change QPs to compare checkin and checkout date.
     // Add QP to to get only todays visit.
     return this.visitRepository.find({
@@ -46,31 +46,6 @@ export class VisitsService {
         message: `No existe un visita con el id: ${id}`
       });
     }
-  }
-
-  async getActiveVisits(
-    checkOut?: Date,
-    vehicleId?: number,
-    driverId?: number
-  ): Promise<VisitEntity[]> {
-    this.logger.debug('Getting checkout', { vehicleId, driverId, checkOut });
-    const beginingOfDay: Date = new Date(checkOut);
-    beginingOfDay.setHours(0, 0, 0);
-    const where: ActiveVisitsQuery = {};
-
-    if (vehicleId) where.vehicleId = vehicleId;
-    if (driverId) where.driverId = driverId;
-    if (checkOut) {
-      where.checkIn = MoreThan(beginingOfDay);
-    }
-    where.checkOut = null;
-
-    this.logger.debug('DB Query Where', { where });
-
-    const visits = await this.visitRepository.find({ where });
-
-    this.logger.debug(visits);
-    return visits;
   }
 
   async update(id: number, visitDto: checkOutVisitDTO): Promise<VisitEntity> {
