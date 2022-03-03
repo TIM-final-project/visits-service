@@ -2,10 +2,11 @@ import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { VisitDTO } from './dto/visit.dto';
-import { Between, Repository } from 'typeorm';
+import { Between, LessThan, MoreThan, Repository } from 'typeorm';
 import { checkOutVisitDTO } from './dto/checkout-visit.dto';
 import { VisitQPs } from './qps/visit.qps';
 import { VisitEntity } from './visits.entity';
+import { ActiveVisitsQuery } from './interfaces/active-visits.query';
 
 @Injectable()
 export class VisitsService {
@@ -16,7 +17,7 @@ export class VisitsService {
     private visitRepository: Repository<VisitEntity>
   ) {}
 
-  findAll(visitQPs: VisitQPs): Promise<VisitEntity[]> {
+  findAll(visitQPs?: VisitQPs): Promise<VisitEntity[]> {
     // TODO: change QPs to compare checkin and checkout date.
     // Add QP to to get only todays visit.
     return this.visitRepository.find({
@@ -47,30 +48,11 @@ export class VisitsService {
     }
   }
 
-  getCheckOut(
-    vehicleId: number,
-    driverId: number,
-    checkOut: Date
-  ): Promise<VisitEntity[]> {
-    this.logger.debug('Getting checkout', { vehicleId, driverId, checkOut });
-    const beginingOfDay: Date = new Date(checkOut);
-    beginingOfDay.setHours(0, 0, 0);
-    const where = {
-      vehicleId,
-      driverId,
-      checkIn: Between(beginingOfDay, checkOut),
-      checkOut: null
-    };
-
-    this.logger.debug('DB Query Where', { where });
-
-    return this.visitRepository.find({ where });
-  }
-
   async update(id: number, visitDto: checkOutVisitDTO): Promise<VisitEntity> {
     const visit: VisitEntity = await this.visitRepository.findOne(id);
 
     if (visit) {
+      visit.active = false;
       this.visitRepository.merge(visit, visitDto);
       try {
         return await this.visitRepository.save(visit);
@@ -88,36 +70,44 @@ export class VisitsService {
     }
   }
 
-  async create(securityId: number, driverId: number, vehicleId: number): Promise<VisitDTO> {
+  async create(
+    securityId: number,
+    driverId: number,
+    vehicleId: number
+  ): Promise<VisitDTO> {
     const visitVehicle: VisitEntity[] = await this.visitRepository.find({
       where: {
         vehicleId: vehicleId,
-        active: true,
+        active: true
       }
     });
 
-    if(visitVehicle.length){
+    if (visitVehicle.length) {
       this.logger.debug(visitVehicle);
-      throw new RpcException({message: "El vehiculo ya posee una visita activa", status: HttpStatus.FORBIDDEN})
+      throw new RpcException({
+        message: 'El vehiculo ya posee una visita activa',
+        status: HttpStatus.FORBIDDEN
+      });
     }
     const visitDriver: VisitEntity[] = await this.visitRepository.find({
       where: {
         vehicleId: vehicleId,
-        active: true,
+        active: true
       }
     });
 
-    if(visitDriver.length){
-      throw new RpcException({message: "El conductor ya posee una visita activa", status: HttpStatus.FORBIDDEN})
+    if (visitDriver.length) {
+      throw new RpcException({
+        message: 'El conductor ya posee una visita activa',
+        status: HttpStatus.FORBIDDEN
+      });
     }
-    
+
     return this.visitRepository.save({
       driverId,
       securityId,
       vehicleId,
       checkOut: null
     });
-  
   }
-
 }
