@@ -74,7 +74,7 @@ export class VisitsService {
     securityId: number,
     driverId: number,
     vehicleId: number
-  ): Promise<VisitDTO> {
+  ): Promise<VisitEntity> {
     const visitVehicle: VisitEntity[] = await this.visitRepository.find({
       where: {
         vehicleId: vehicleId,

@@ -1,7 +1,9 @@
+import { ExceptionEntity } from 'src/exceptions/exceptions.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   Timestamp,
   UpdateDateColumn
@@ -51,4 +53,7 @@ export class VisitEntity {
     default: true
   })
   active: boolean;
+
+  @OneToOne(() => ExceptionEntity, exception => exception.visit)
+  exception: ExceptionEntity;
 }
