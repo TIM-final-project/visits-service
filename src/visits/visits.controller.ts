@@ -6,9 +6,7 @@ import { checkOutInterface } from './interfaces/checkout.interface';
 import { Header } from './interfaces/header.interface';
 import { VisitQPs } from './qps/visit.qps';
 import { VisitsService } from './visits.service';
-import { ExceptionsDTO } from 'src/exceptions/exception.dto';
 import { ExceptionService } from 'src/exceptions/exception.service';
-import { VisitEntity } from './visits.entity';
 
 @Controller('visits')
 export class VisitsController {
@@ -45,7 +43,9 @@ export class VisitsController {
     return this.visitsService.create(
       dto.securityId,
       dto.driverId,
-      dto.vehicleId
+      dto.vehicleId,
+      dto.arrivalTS,
+      dto.exceptionDto
     );
   }
 
@@ -87,19 +87,4 @@ export class VisitsController {
     }
   }
 
-  @MessagePattern('visits_exception')
-  async createException(dto: ExceptionsDTO): Promise<VisitDTO> {
-    this.logger.debug('Attempting to create visit for', dto);
-
-    this.logger.debug(dto.securityId);
-    const visit: VisitEntity = await this.visitsService.create(
-      dto.securityId,
-      dto.driverId,
-      dto.vehicleId
-    );
-    this.logger.debug('Visit created. Creating exception audit now...');
-    this.exceptionsService.create(visit, dto.managerId, dto.observations);
-
-    return visit;
-  }
 }

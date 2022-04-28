@@ -7,6 +7,8 @@ import { checkOutVisitDTO } from './dto/checkout-visit.dto';
 import { VisitQPs } from './qps/visit.qps';
 import { VisitEntity } from './visits.entity';
 import { ActiveVisitsQuery } from './interfaces/active-visits.query';
+import { ExceptionsDTO } from 'src/exceptions/exception.dto';
+import { ExceptionEntity } from 'src/exceptions/exceptions.entity';
 
 @Injectable()
 export class VisitsService {
@@ -73,7 +75,9 @@ export class VisitsService {
   async create(
     securityId: number,
     driverId: number,
-    vehicleId: number
+    vehicleId: number,
+    arrival_at: Date,
+    exceptionDto?: ExceptionsDTO
   ): Promise<VisitEntity> {
     const visitVehicle: VisitEntity[] = await this.visitRepository.find({
       where: {
@@ -102,12 +106,22 @@ export class VisitsService {
         status: HttpStatus.FORBIDDEN
       });
     }
+   
+    const visit: VisitEntity = new VisitEntity();
 
-    return this.visitRepository.save({
-      driverId,
-      securityId,
-      vehicleId,
-      checkOut: null
-    });
+    if(!!exceptionDto){
+      this.logger.log("Visit with exception");
+      const exception: ExceptionEntity = new ExceptionEntity();
+      exception.managerId = exceptionDto.managerId;
+      exception.observations = exceptionDto.observations;
+      visit.exception = exception;
+    }
+
+    visit.arrival_at = arrival_at;
+    visit.driverId = driverId;
+    visit.securityId = securityId;
+    visit.vehicleId = securityId;
+
+    return this.visitRepository.save(visit);
   }
 }

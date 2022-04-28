@@ -48,12 +48,15 @@ export class VisitEntity {
   @UpdateDateColumn()
   updated_at: Date;
 
+  @Column({ type: 'datetime' })
+  arrival_at: Date;
+
   @Column({
     nullable: false,
     default: true
   })
   active: boolean;
 
-  @OneToOne(() => ExceptionEntity, exception => exception.visit)
+  @OneToOne(() => ExceptionEntity, exception => exception.visit, {cascade : true})
   exception: ExceptionEntity;
 }
