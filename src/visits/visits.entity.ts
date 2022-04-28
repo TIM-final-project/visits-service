@@ -48,7 +48,7 @@ export class VisitEntity {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @Column({ type: 'datetime' })
+  @Column({ nullable: false, type: 'timestamp' })
   arrival_at: Date;
 
   @Column({
@@ -57,6 +57,8 @@ export class VisitEntity {
   })
   active: boolean;
 
-  @OneToOne(() => ExceptionEntity, exception => exception.visit, {cascade : true})
+  @OneToOne(() => ExceptionEntity, (exception) => exception.visit, {
+    cascade: true
+  })
   exception: ExceptionEntity;
 }

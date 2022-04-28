@@ -44,7 +44,7 @@ export class VisitsController {
       dto.securityId,
       dto.driverId,
       dto.vehicleId,
-      dto.arrivalTS,
+      dto.arrivalTime,
       dto.exceptionDto
     );
   }
