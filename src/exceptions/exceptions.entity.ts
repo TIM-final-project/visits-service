@@ -1,32 +1,30 @@
 import { VisitEntity } from 'src/visits/visits.entity';
 import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    JoinColumn,
-    OneToOne,
-    PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity()
 export class ExceptionEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @OneToOne(() => VisitEntity, visit => visit.exception)
-    @JoinColumn()
-    visit: VisitEntity;
+  @OneToOne(() => VisitEntity, (visit) => visit.exception)
+  @JoinColumn()
+  visit: VisitEntity;
 
-    @Column({
-        nullable: false
-    })
-    managerId: number;
+  @Column({
+    nullable: false,
+  })
+  managerId: number;
 
-    @Column()
-    observations: string;
+  @Column()
+  observations: string;
 
-    @CreateDateColumn()
-    created_at: Date;
-
+  @CreateDateColumn()
+  created_at: Date;
 }
-  

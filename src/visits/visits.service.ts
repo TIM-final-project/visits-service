@@ -23,21 +23,23 @@ export class VisitsService {
     // Add QP to to get only todays visit.
     const where: CheckInWhere = {};
 
-    if (!!visitQPs.driverId) where.driverId = visitQPs.driverId;
-    if (!!visitQPs.vehicleId) where.vehicleId = visitQPs.vehicleId;
-    if (!!visitQPs.securityId) where.securityId = visitQPs.securityId;
+    if (!!visitQPs) {
+      if (!!visitQPs.driverId) where.driverId = visitQPs.driverId;
+      if (!!visitQPs.vehicleId) where.vehicleId = visitQPs.vehicleId;
+      if (!!visitQPs.securityId) where.securityId = visitQPs.securityId;
 
-    if (!!visitQPs.before && !!visitQPs.after) {
-      where.checkIn = Between(visitQPs.after, visitQPs.before);
-    } else if (!!visitQPs.before) {
-      where.checkIn = LessThanOrEqual(visitQPs.before);
-    } else if (!!visitQPs.after) {
-      where.checkIn = MoreThanOrEqual(visitQPs.after);
-    } else if (!!visitQPs.checkIn) {
-      where.checkIn = visitQPs.checkIn;
+      if (!!visitQPs.before && !!visitQPs.after) {
+        where.checkIn = Between(visitQPs.after, visitQPs.before);
+      } else if (!!visitQPs.before) {
+        where.checkIn = LessThanOrEqual(visitQPs.before);
+      } else if (!!visitQPs.after) {
+        where.checkIn = MoreThanOrEqual(visitQPs.after);
+      } else if (!!visitQPs.checkIn) {
+        where.checkIn = visitQPs.checkIn;
+      }
+      this.logger.debug('Where', { where });
     }
 
-    this.logger.debug('Where', { where });
     const query = {
       where: { ...where },
       relations: ['exception'],

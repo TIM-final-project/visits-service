@@ -1,4 +1,6 @@
 export class ExceptionsDTO {
-    managerId: number;
-    observations: string;
+  id: number;
+  managerId: number;
+  observations: string;
+  created_at: Date;
 }
