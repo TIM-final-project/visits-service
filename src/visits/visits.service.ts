@@ -1,13 +1,13 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, LessThan, MoreThan, Repository } from 'typeorm';
+import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { checkOutVisitDTO } from './dto/checkout-visit.dto';
 import { VisitQPs } from './qps/visit.qps';
 import { VisitEntity } from './visits.entity';
-import { ActiveVisitsQuery } from './interfaces/active-visits.query';
-import { ExceptionsDTO } from 'src/exceptions/exception.dto';
 import { ExceptionEntity } from 'src/exceptions/exceptions.entity';
+import { CheckInVisitDTO } from './dto/checkin-visit.dto';
+import { CheckInWhere } from './dto/checkin-visit.where';
 
 @Injectable()
 export class VisitsService {
@@ -21,12 +21,31 @@ export class VisitsService {
   findAll(visitQPs?: VisitQPs): Promise<VisitEntity[]> {
     // TODO: change QPs to compare checkin and checkout date.
     // Add QP to to get only todays visit.
-    return this.visitRepository.find({
-      where: {
-        ...visitQPs,
-        active: true
-      }
-    });
+    const where: CheckInWhere = {};
+
+    if (!!visitQPs.driverId) where.driverId = visitQPs.driverId;
+    if (!!visitQPs.vehicleId) where.vehicleId = visitQPs.vehicleId;
+    if (!!visitQPs.securityId) where.securityId = visitQPs.securityId;
+
+    if (!!visitQPs.before && !!visitQPs.after) {
+      where.checkIn = Between(visitQPs.after, visitQPs.before);
+    } else if (!!visitQPs.before) {
+      where.checkIn = LessThanOrEqual(visitQPs.before);
+    } else if (!!visitQPs.after) {
+      where.checkIn = MoreThanOrEqual(visitQPs.after);
+    } else if (!!visitQPs.checkIn) {
+      where.checkIn = visitQPs.checkIn;
+    }
+
+    this.logger.debug('Where', { where });
+    const query = {
+      where: { ...where },
+      relations: ['exception'],
+    };
+
+    this.logger.debug('Query', { query });
+
+    return this.visitRepository.find(query);
   }
 
   async findOne(id: number, visitQPs?: VisitQPs): Promise<VisitEntity> {
@@ -36,15 +55,15 @@ export class VisitsService {
     const visit = await this.visitRepository.findOne(id, {
       where: {
         ...visitQPs,
-        active: true
-      }
+        active: true,
+      },
     });
     if (!!visit) {
       return visit;
     } else {
       this.logger.error('Error Getting visit', { id });
       throw new RpcException({
-        message: `No existe un visita con el id: ${id}`
+        message: `No existe un visita con el id: ${id}`,
       });
     }
   }
@@ -60,66 +79,63 @@ export class VisitsService {
       } catch (error) {
         this.logger.error('Error updating visit', { id });
         throw new RpcException({
-          message: `Ha ocurrido un error al actualizar la visita: ${id}`
+          message: `Ha ocurrido un error al actualizar la visita: ${id}`,
         });
       }
     } else {
       this.logger.error('Error creating visit', { id });
       throw new RpcException({
-        message: `No existe una visita con el id: ${id}`
+        message: `No existe una visita con el id: ${id}`,
       });
     }
   }
 
-  async create(
-    securityId: number,
-    driverId: number,
-    vehicleId: number,
-    arrival_at: Date,
-    exceptionDto?: ExceptionsDTO
-  ): Promise<VisitEntity> {
+  async create(dto: CheckInVisitDTO): Promise<VisitEntity> {
     const visitVehicle: VisitEntity[] = await this.visitRepository.find({
       where: {
-        vehicleId: vehicleId,
-        active: true
-      }
+        vehicleId: dto.vehicleId,
+        active: true,
+      },
     });
 
     if (visitVehicle.length) {
       this.logger.debug(visitVehicle);
       throw new RpcException({
         message: 'El vehiculo ya posee una visita activa',
-        status: HttpStatus.FORBIDDEN
+        status: HttpStatus.FORBIDDEN,
       });
     }
     const visitDriver: VisitEntity[] = await this.visitRepository.find({
       where: {
-        vehicleId: vehicleId,
-        active: true
-      }
+        vehicleId: dto.vehicleId,
+        active: true,
+      },
     });
 
     if (visitDriver.length) {
       throw new RpcException({
         message: 'El conductor ya posee una visita activa',
-        status: HttpStatus.FORBIDDEN
+        status: HttpStatus.FORBIDDEN,
       });
     }
-   
+
     const visit: VisitEntity = new VisitEntity();
 
-    if(!!exceptionDto){
-      this.logger.log("Visit with exception");
+    if (!!dto.exceptionDto) {
+      this.logger.log('Visit with exception');
       const exception: ExceptionEntity = new ExceptionEntity();
-      exception.managerId = exceptionDto.managerId;
-      exception.observations = exceptionDto.observations;
+      exception.managerId = dto.exceptionDto.managerId;
+      exception.observations = dto.exceptionDto.observations;
       visit.exception = exception;
     }
 
-    visit.arrival_at = arrival_at;
-    visit.driverId = driverId;
-    visit.securityId = securityId;
-    visit.vehicleId = securityId;
+    visit.arrival_at = dto.arrivalTime;
+    visit.driverId = dto.driverId;
+    visit.securityId = dto.securityId;
+    visit.vehicleId = dto.securityId;
+    visit.palletsEntrada = dto.palletsEntrada;
+    visit.palletsSalida = dto.palletsSalida;
+    visit.destiny = dto.destiny;
 
     return this.visitRepository.save(visit);
   }

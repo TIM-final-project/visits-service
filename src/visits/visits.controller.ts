@@ -40,20 +40,14 @@ export class VisitsController {
   @MessagePattern('visit_create')
   async create(dto: CheckInVisitDTO): Promise<VisitDTO> {
     this.logger.debug('Attempting to create visit for', dto);
-    return this.visitsService.create(
-      dto.securityId,
-      dto.driverId,
-      dto.vehicleId,
-      dto.arrivalTime,
-      dto.exceptionDto
-    );
+    return this.visitsService.create(dto);
   }
 
   @MessagePattern('visits_resource_exit')
   async resourceExit({
     vehicleId,
     driverId,
-    checkOut
+    checkOut,
   }: checkOutInterface): Promise<VisitDTO> {
     this.logger.debug('Resource exiting ', { vehicleId, driverId, checkOut });
     try {
@@ -64,7 +58,7 @@ export class VisitsController {
           { vehicleId, driverId }
         );
         throw new RpcException({
-          message: `No se a encontrado un ingreso previo a la salida`
+          message: `No se a encontrado un ingreso previo a la salida`,
         });
       } else if (checkIns.length > 1) {
         this.logger.error(
@@ -79,12 +73,11 @@ export class VisitsController {
       this.logger.error('Error CheckingOut visit', {
         vehicleId,
         driverId,
-        checkOut
+        checkOut,
       });
       throw new RpcException({
-        message: `Ha ocurrido un error al registrar la salida`
+        message: `Ha ocurrido un error al registrar la salida`,
       });
     }
   }
-
 }

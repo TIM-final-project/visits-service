@@ -6,7 +6,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
   Timestamp,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from 'typeorm';
 @Entity()
 export class VisitEntity {
@@ -14,17 +14,17 @@ export class VisitEntity {
   id: number;
 
   @Column({
-    nullable: false
+    nullable: false,
   })
   vehicleId: number;
 
   @Column({
-    nullable: false
+    nullable: false,
   })
   driverId: number;
 
   @Column({
-    nullable: false
+    nullable: false,
   })
   securityId: number;
 
@@ -32,13 +32,13 @@ export class VisitEntity {
     nullable: false,
     update: false,
     default: () => 'CURRENT_TIMESTAMP',
-    type: 'timestamp'
+    type: 'timestamp',
   })
   checkIn: Timestamp;
 
   @Column({
     nullable: true,
-    type: 'timestamp'
+    type: 'timestamp',
   })
   checkOut?: Timestamp;
 
@@ -52,13 +52,28 @@ export class VisitEntity {
   arrival_at: Date;
 
   @Column({
+    nullable: true,
+  })
+  palletsEntrada?: number;
+
+  @Column({
+    nullable: true,
+  })
+  palletsSalida?: number;
+
+  @Column({
+    nullable: true,
+  })
+  destiny?: string;
+
+  @Column({
     nullable: false,
-    default: true
+    default: true,
   })
   active: boolean;
 
   @OneToOne(() => ExceptionEntity, (exception) => exception.visit, {
-    cascade: true
+    cascade: true,
   })
   exception: ExceptionEntity;
 }
