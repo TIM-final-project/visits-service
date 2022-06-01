@@ -37,12 +37,13 @@ export class VisitsService {
       } else if (!!visitQPs.checkIn) {
         where.checkIn = visitQPs.checkIn;
       }
+      where.active = visitQPs.active;
       this.logger.debug('Where', { where });
     }
 
     const query = {
       where: { ...where },
-      relations: ['exception'],
+      relations: ['exception']
     };
 
     this.logger.debug('Query', { query });
@@ -57,15 +58,15 @@ export class VisitsService {
     const visit = await this.visitRepository.findOne(id, {
       where: {
         ...visitQPs,
-        active: true,
-      },
+        active: true
+      }
     });
     if (!!visit) {
       return visit;
     } else {
       this.logger.error('Error Getting visit', { id });
       throw new RpcException({
-        message: `No existe un visita con el id: ${id}`,
+        message: `No existe un visita con el id: ${id}`
       });
     }
   }
@@ -81,13 +82,13 @@ export class VisitsService {
       } catch (error) {
         this.logger.error('Error updating visit', { id });
         throw new RpcException({
-          message: `Ha ocurrido un error al actualizar la visita: ${id}`,
+          message: `Ha ocurrido un error al actualizar la visita: ${id}`
         });
       }
     } else {
       this.logger.error('Error creating visit', { id });
       throw new RpcException({
-        message: `No existe una visita con el id: ${id}`,
+        message: `No existe una visita con el id: ${id}`
       });
     }
   }
@@ -96,28 +97,28 @@ export class VisitsService {
     const visitVehicle: VisitEntity[] = await this.visitRepository.find({
       where: {
         vehicleId: dto.vehicleId,
-        active: true,
-      },
+        active: true
+      }
     });
 
     if (visitVehicle.length) {
       this.logger.debug(visitVehicle);
       throw new RpcException({
         message: 'El vehiculo ya posee una visita activa',
-        status: HttpStatus.FORBIDDEN,
+        status: HttpStatus.FORBIDDEN
       });
     }
     const visitDriver: VisitEntity[] = await this.visitRepository.find({
       where: {
         vehicleId: dto.vehicleId,
-        active: true,
-      },
+        active: true
+      }
     });
 
     if (visitDriver.length) {
       throw new RpcException({
         message: 'El conductor ya posee una visita activa',
-        status: HttpStatus.FORBIDDEN,
+        status: HttpStatus.FORBIDDEN
       });
     }
 

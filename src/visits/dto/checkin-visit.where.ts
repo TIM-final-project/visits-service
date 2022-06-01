@@ -5,4 +5,5 @@ export class CheckInWhere {
   vehicleId?: number;
   securityId?: number;
   checkIn?: Date | FindOperator<any>;
+  active?: boolean;
 }
