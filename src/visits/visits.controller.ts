@@ -51,7 +51,11 @@ export class VisitsController {
   }: checkOutInterface): Promise<VisitDTO> {
     this.logger.debug('Resource exiting ', { vehicleId, driverId, checkOut });
     try {
-      const checkIns = await this.visitsService.findAll({ active: true });
+      const checkIns = await this.visitsService.findAll({
+        vehicleId,
+        driverId,
+        active: true,
+      });
       if (!checkIns.length) {
         this.logger.error(
           'There are no checkIns from the pair vehicle/driver today.',
