@@ -1,6 +1,4 @@
-import { Timestamp } from 'typeorm';
-
-export class checkOutVisitDTO {
+export class CheckOutVisitDTO {
   id: number;
   checkOut: Date;
 }

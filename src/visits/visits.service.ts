@@ -2,12 +2,13 @@ import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
-import { checkOutVisitDTO } from './dto/checkout-visit.dto';
+import { CheckOutVisitDTO } from './dto/checkout-visit.dto';
 import { VisitQPs } from './qps/visit.qps';
 import { VisitEntity } from './visits.entity';
 import { ExceptionEntity } from 'src/exceptions/exceptions.entity';
 import { CheckInVisitDTO } from './dto/checkin-visit.dto';
 import { CheckInWhere } from './dto/checkin-visit.where';
+import { UpdateVisitDTO } from './dto/update-visit.dto';
 
 @Injectable()
 export class VisitsService {
@@ -75,24 +76,24 @@ export class VisitsService {
     }
   }
 
-  async update(id: number, visitDto: checkOutVisitDTO): Promise<VisitEntity> {
+  async checkout(id: number, visitDto: CheckOutVisitDTO): Promise<VisitEntity> {
     const visit: VisitEntity = await this.visitRepository.findOne(id);
 
-    if (visit) {
-      visit.active = false;
-      this.visitRepository.merge(visit, visitDto);
-      try {
-        return await this.visitRepository.save(visit);
-      } catch (error) {
-        this.logger.error('Error updating visit', { id });
-        throw new RpcException({
-          message: `Ha ocurrido un error al actualizar la visita: ${id}`,
-        });
-      }
-    } else {
+    if (!visit) {
       this.logger.error('Error creating visit', { id });
       throw new RpcException({
         message: `No existe una visita con el id: ${id}`,
+      });
+    }
+
+    visit.active = false;
+    this.visitRepository.merge(visit, visitDto);
+    try {
+      return await this.visitRepository.save(visit);
+    } catch (error) {
+      this.logger.error('Error updating visit', { id });
+      throw new RpcException({
+        message: `Ha ocurrido un error al actualizar la visita: ${id}`,
       });
     }
   }
@@ -145,5 +146,27 @@ export class VisitsService {
     visit.destiny = dto.destiny;
 
     return this.visitRepository.save(visit);
+  }
+
+  async update(id: number, dto: UpdateVisitDTO): Promise<VisitEntity> {
+    const visit: VisitEntity = await this.visitRepository.findOne(id);
+
+    if (!visit) {
+      this.logger.debug(`Visit ${id} not found`);
+      throw new RpcException({
+        message: 'La visita no existe',
+        status: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    this.visitRepository.merge(visit, dto);
+    try {
+      return await this.visitRepository.save(visit);
+    } catch (error) {
+      this.logger.error('Error updating visit', { id });
+      throw new RpcException({
+        message: `Ha ocurrido un error al actualizar la visita: ${id}`,
+      });
+    }
   }
 }
