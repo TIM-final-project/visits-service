@@ -58,7 +58,7 @@ export class VisitsController {
   }: CheckOutInterface): Promise<VisitDTO> {
     this.logger.debug('Resource exiting ', { vehicleId, driverId, checkOut });
     try {
-      const checkIns = await this.visitsService.findAll();
+      const checkIns = await this.visitsService.findAll(null);
       if (!checkIns.length) {
         this.logger.error(
           'There are no checkIns from the pair vehicle/driver today.',
@@ -83,7 +83,8 @@ export class VisitsController {
         checkOut,
       });
       throw new RpcException({
-        message: `Ha ocurrido un error al registrar la salida`,
+        message:
+          `Ha ocurrido un error al registrar la salida: ` + error.message,
       });
     }
   }

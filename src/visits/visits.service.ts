@@ -22,6 +22,8 @@ export class VisitsService {
   findAll(visitQPs?: VisitQPs): Promise<VisitEntity[]> {
     // TODO: change QPs to compare checkin and checkout date.
     // Add QP to to get only todays visit.
+    this.logger.debug('findAll QPs:', { ...visitQPs });
+
     const where: CheckInWhere = {};
 
     if (!!visitQPs) {
@@ -40,10 +42,10 @@ export class VisitsService {
       }
       where.active = visitQPs.active;
       this.logger.debug('Where', { where });
-    }
 
-    if (!visitQPs.active) {
-      delete where.active;
+      if (!visitQPs.active) {
+        delete where.active;
+      }
     }
 
     const query = {
