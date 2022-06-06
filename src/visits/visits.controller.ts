@@ -27,7 +27,7 @@ export class VisitsController {
   @MessagePattern('visits_find_all_entities')
   async findAllEntities(): Promise<VisitDTO[]> {
     this.logger.debug('Find all');
-    const visits = await this.visitsService.findAll({});
+    const visits = await this.visitsService.findAll({ active: true });
     this.logger.debug(visits);
     return visits;
   }
