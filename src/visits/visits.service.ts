@@ -142,7 +142,7 @@ export class VisitsService {
     visit.arrival_at = dto.arrivalTime;
     visit.driverId = dto.driverId;
     visit.securityId = dto.securityId;
-    visit.vehicleId = dto.securityId;
+    visit.vehicleId = dto.vehicleId;
     visit.palletsEntrada = dto.palletsEntrada;
     visit.palletsSalida = dto.palletsSalida;
     visit.destiny = dto.destiny;
