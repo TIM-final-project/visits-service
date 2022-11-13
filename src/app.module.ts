@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './config';
 import { ExceptionsModule } from './exceptions/exception.module';
 import { VisitsModule } from './visits/visits.module';
+import { ExternalVisitsModule } from './external-visits/external-visits.module';
 
 @Module({
   imports: [
@@ -12,7 +13,8 @@ import { VisitsModule } from './visits/visits.module';
       useClass: TypeOrmConfigService
     }),
     VisitsModule,
-    ExceptionsModule
-  ],
+    ExceptionsModule,
+    ExternalVisitsModule
+  ]
 })
 export class AppModule {}
