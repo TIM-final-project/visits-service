@@ -19,7 +19,7 @@ export class ExternalVisitsController {
   }
 
   @MessagePattern('external_visits_find_one')
-  async findOne(id: number): Promise<ResponseDTO> {
+  async findOne({ id }): Promise<ResponseDTO> {
     this.logger.debug('Find by id', { id });
     return this.externalVisitsService.findOne(id);
   }
@@ -32,7 +32,7 @@ export class ExternalVisitsController {
 
   @MessagePattern('external_visits_update')
   async update(update: UpdateDTO): Promise<ResponseDTO> {
-    this.logger.debug('Updateing external visit', { update });
+    this.logger.debug('Updating external visit', { update });
     return this.externalVisitsService.update(update);
   }
 }

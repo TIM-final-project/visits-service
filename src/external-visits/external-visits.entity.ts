@@ -31,10 +31,14 @@ export default class ExternalVisitEntity {
   })
   scheduledDate: Date;
 
-  @Column()
+  @Column({
+    nullable: true
+  })
   arrivalDate?: Date;
 
-  @Column()
+  @Column({
+    nullable: true
+  })
   exitDate?: Date;
 
   @Column({
@@ -46,6 +50,11 @@ export default class ExternalVisitEntity {
     default: true
   })
   active: boolean;
+
+  @Column({
+    nullable: false
+  })
+  managerId: number;
 
   @CreateDateColumn()
   createdAt?: Date;

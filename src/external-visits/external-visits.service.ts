@@ -21,9 +21,18 @@ export class ExternalVisitsService {
     return this.externalVisitRepository.find({ where: { ...params } });
   }
 
-  findOne(id: number): Promise<ExternalVisitEntity> {
+  async findOne(id: number): Promise<ExternalVisitEntity> {
     this.logger.debug('Id', { id });
-    return this.externalVisitRepository.findOne(id);
+    const visit = await this.externalVisitRepository.findOne(id);
+    if (visit) {
+      return visit;
+    } else {
+      this.logger.error('No visit with requested id', { id });
+      throw new RpcException({
+        message: 'No se ha encontrado la visita en cuestion',
+        status: HttpStatus.INTERNAL_SERVER_ERROR
+      });
+    }
   }
 
   create(create: CreateDTO): Promise<ExternalVisitEntity> {
@@ -39,9 +48,10 @@ export class ExternalVisitsService {
   }
 
   async update({ id, ...rest }: UpdateDTO): Promise<ExternalVisitEntity> {
+    this.logger.debug('Updating visit', { id, ...rest });
     try {
       const visit = await this.externalVisitRepository.findOne(id);
-      if (!!visit) {
+      if (!visit) {
         this.logger.debug(
           `External Visit ${id} does not exists in the DataBase.`
         );
