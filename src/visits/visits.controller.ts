@@ -54,7 +54,7 @@ export class VisitsController {
   async resourceExit({
     vehicleId,
     driverId,
-    checkOut,
+    checkOut
   }: CheckOutInterface): Promise<VisitDTO> {
     this.logger.debug('Resource exiting ', { vehicleId, driverId, checkOut });
     try {
@@ -65,7 +65,7 @@ export class VisitsController {
           { vehicleId, driverId }
         );
         throw new RpcException({
-          message: `No se a encontrado un ingreso previo a la salida`,
+          message: `No se a encontrado un ingreso previo a la salida`
         });
       } else if (checkIns.length > 1) {
         this.logger.error(
@@ -80,11 +80,10 @@ export class VisitsController {
       this.logger.error('Error CheckingOut visit', {
         vehicleId,
         driverId,
-        checkOut,
+        checkOut
       });
       throw new RpcException({
-        message:
-          `Ha ocurrido un error al registrar la salida: ` + error.message,
+        message: `Ha ocurrido un error al registrar la salida: ` + error.message
       });
     }
   }
