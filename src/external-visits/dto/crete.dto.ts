@@ -4,5 +4,5 @@ export class CreateDTO {
   cuit: string;
   scheduledDate: Date;
   vehiclePlate?: string;
-  managerId: number;
+  managerUuid: string;
 }
