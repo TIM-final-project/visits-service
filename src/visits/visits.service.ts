@@ -134,7 +134,7 @@ export class VisitsService {
     if (!!dto.exceptionDto) {
       this.logger.log('Visit with exception');
       const exception: ExceptionEntity = new ExceptionEntity();
-      exception.managerId = dto.exceptionDto.managerId;
+      exception.managerUuid = dto.exceptionDto.managerUuid;
       exception.observations = dto.exceptionDto.observations;
       visit.exception = exception;
     }
