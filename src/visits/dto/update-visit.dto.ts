@@ -5,8 +5,8 @@ export class UpdateVisitDTO extends PartialType(
   OmitType(CheckInVisitDTO, [
     'vehicleId',
     'driverId',
-    'securityId',
+    'userUUID',
     'exceptionDto',
-    'arrivalTime',
+    'arrivalTime'
   ] as const)
 ) {}

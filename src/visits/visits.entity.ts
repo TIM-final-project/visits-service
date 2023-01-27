@@ -29,6 +29,11 @@ export class VisitEntity {
   securityId: number;
 
   @Column({
+    nullable: true
+  })
+  userUUID: string;
+
+  @Column({
     nullable: false,
     update: false,
     default: () => 'CURRENT_TIMESTAMP',
@@ -71,6 +76,11 @@ export class VisitEntity {
     default: true
   })
   active: boolean;
+
+  @Column({
+    nullable: true
+  })
+  hasSupply?: boolean;
 
   @OneToOne(() => ExceptionEntity, (exception) => exception.visit, {
     cascade: true

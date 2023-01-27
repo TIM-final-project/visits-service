@@ -9,7 +9,7 @@ export class VisitDTO {
 
   driverId: number;
 
-  securityId: number;
+  userUUID: string;
 
   checkIn: Timestamp;
 
@@ -28,6 +28,8 @@ export class VisitDTO {
   destiny?: string;
 
   active: boolean;
+
+  hasSupply?: boolean;
 
   exception: ExceptionsDTO;
 }
