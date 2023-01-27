@@ -7,4 +7,6 @@ export class QPsDTO {
   active?: boolean;
   arrivalDate?: Date;
   exitDate?: Date;
+  before?: Date;
+  after?: Date;
 }

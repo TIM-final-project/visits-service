@@ -51,10 +51,8 @@ export default class ExternalVisitEntity {
   })
   active: boolean;
 
-  @Column({
-    nullable: false
-  })
-  managerId: number;
+  @Column()
+  managerUuid: string;
 
   @CreateDateColumn()
   createdAt?: Date;

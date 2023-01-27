@@ -1,11 +1,18 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import {
+  Between,
+  FindManyOptions,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Repository
+} from 'typeorm';
 import { CreateDTO } from './dto/crete.dto';
 import { QPsDTO } from './dto/qps.dto';
 import { UpdateDTO } from './dto/update.dto';
 import ExternalVisitEntity from './external-visits.entity';
+import { omit } from 'lodash';
 
 @Injectable()
 export class ExternalVisitsService {
@@ -18,7 +25,20 @@ export class ExternalVisitsService {
 
   findAll(params: QPsDTO): Promise<ExternalVisitEntity[]> {
     this.logger.debug('Query', { params });
-    return this.externalVisitRepository.find({ where: { ...params } });
+    const options: FindManyOptions = {
+      where: { ...omit(params, ['before', 'after']) }
+    };
+
+    if (!!params.before && !!params.after) {
+      options.where.scheduledDate = Between(params.after, params.before);
+    } else if (!!params.before) {
+      options.where.scheduledDate = LessThanOrEqual(params.before);
+    } else if (!!params.after) {
+      options.where.scheduledDate = MoreThanOrEqual(params.after);
+    }
+
+    this.logger.debug(options);
+    return this.externalVisitRepository.find(options);
   }
 
   async findOne(id: number): Promise<ExternalVisitEntity> {

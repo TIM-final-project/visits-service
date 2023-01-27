@@ -5,7 +5,7 @@ import {
   Entity,
   JoinColumn,
   OneToOne,
-  PrimaryGeneratedColumn,
+  PrimaryGeneratedColumn
 } from 'typeorm';
 
 @Entity()
@@ -18,9 +18,9 @@ export class ExceptionEntity {
   visit: VisitEntity;
 
   @Column({
-    nullable: false,
+    nullable: false
   })
-  managerId: number;
+  managerUuid: string;
 
   @Column()
   observations: string;

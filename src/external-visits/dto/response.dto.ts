@@ -9,5 +9,5 @@ export class ResponseDTO {
   exitDate?: Date;
   createdAt?: Date;
   updatedAt?: Date;
-  managerId: number;
+  managerUuid: string;
 }
