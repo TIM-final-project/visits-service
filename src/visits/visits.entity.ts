@@ -24,11 +24,6 @@ export class VisitEntity {
   driverId: number;
 
   @Column({
-    nullable: false
-  })
-  securityId: number;
-
-  @Column({
     nullable: true
   })
   userUUID: string;
