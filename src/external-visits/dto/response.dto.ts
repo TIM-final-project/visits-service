@@ -1,4 +1,4 @@
-export class ResponseDTO {
+export class ResponseExternalVisitDTO {
   name: string;
   surname: string;
   cuit: string;
@@ -9,5 +9,4 @@ export class ResponseDTO {
   exitDate?: Date;
   createdAt?: Date;
   updatedAt?: Date;
-  managerUuid: string;
 }

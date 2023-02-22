@@ -41,6 +41,15 @@ export default class ExternalVisitEntity {
   })
   exitDate?: Date;
 
+  @Column({ nullable: true })
+  company?: string;
+
+  @Column({ nullable: true })
+  has_vehicle?: boolean;
+
+  @Column({ nullable: true })
+  checkin_form: boolean;
+
   @Column({
     nullable: true
   })
@@ -51,8 +60,20 @@ export default class ExternalVisitEntity {
   })
   active: boolean;
 
-  @Column()
-  managerUuid: string;
+  @Column({
+    nullable: false
+  })
+  userUUID: string;
+
+  @Column({
+    nullable: true
+  })
+  tasks?: string;
+
+  @Column({
+    nullable: true
+  })
+  observations?: string;
 
   @CreateDateColumn()
   createdAt?: Date;

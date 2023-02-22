@@ -8,11 +8,12 @@ import {
   MoreThanOrEqual,
   Repository
 } from 'typeorm';
-import { CreateDTO } from './dto/crete.dto';
-import { QPsDTO } from './dto/qps.dto';
-import { UpdateDTO } from './dto/update.dto';
+import { CreateExternalVisitDTO } from './dto/crete.dto';
+import { QPsExternalIntegrationDTO } from './dto/qps.dto';
 import ExternalVisitEntity from './external-visits.entity';
 import { omit } from 'lodash';
+import { UpdateExternalVisitDTO } from './dto/update.dto';
+import { ResponseExternalVisitDTO } from './dto/response.dto';
 
 @Injectable()
 export class ExternalVisitsService {
@@ -23,7 +24,7 @@ export class ExternalVisitsService {
     private externalVisitRepository: Repository<ExternalVisitEntity>
   ) {}
 
-  findAll(params: QPsDTO): Promise<ExternalVisitEntity[]> {
+  findAll(params: QPsExternalIntegrationDTO): Promise<ExternalVisitEntity[]> {
     this.logger.debug('Query', { params });
     const options: FindManyOptions = {
       where: { ...omit(params, ['before', 'after']) }
@@ -41,7 +42,7 @@ export class ExternalVisitsService {
     return this.externalVisitRepository.find(options);
   }
 
-  async findOne(id: number): Promise<ExternalVisitEntity> {
+  async findOne(id: number): Promise<ResponseExternalVisitDTO> {
     this.logger.debug('Id', { id });
     const visit = await this.externalVisitRepository.findOne(id);
     if (visit) {
@@ -55,7 +56,7 @@ export class ExternalVisitsService {
     }
   }
 
-  create(create: CreateDTO): Promise<ExternalVisitEntity> {
+  create(create: CreateExternalVisitDTO): Promise<ExternalVisitEntity> {
     try {
       return this.externalVisitRepository.save(create);
     } catch (error) {
@@ -67,8 +68,8 @@ export class ExternalVisitsService {
     }
   }
 
-  async update({ id, ...rest }: UpdateDTO): Promise<ExternalVisitEntity> {
-    this.logger.debug('Updating visit', { id, ...rest });
+  async update({ id, body }): Promise<ExternalVisitEntity> {
+    this.logger.debug('Updating visit', { id, body });
     try {
       const visit = await this.externalVisitRepository.findOne(id);
       if (!visit) {
@@ -76,11 +77,11 @@ export class ExternalVisitsService {
           `External Visit ${id} does not exists in the DataBase.`
         );
         throw new RpcException({
-          message: 'La visita soliciada no existe.',
+          message: 'La visita solicitada no existe.',
           status: HttpStatus.NOT_FOUND
         });
       }
-      this.externalVisitRepository.merge(visit, { ...rest });
+      this.externalVisitRepository.merge(visit, body);
       return this.externalVisitRepository.save(visit);
     } catch (error) {
       this.logger.error('Error creating external visit', { error });

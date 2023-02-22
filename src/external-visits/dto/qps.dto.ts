@@ -1,4 +1,4 @@
-export class QPsDTO {
+export class QPsExternalIntegrationDTO {
   name?: string;
   surname?: string;
   cuit?: string;

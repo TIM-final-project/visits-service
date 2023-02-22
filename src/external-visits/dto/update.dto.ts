@@ -1,6 +1,6 @@
-export class UpdateDTO {
-  id: number;
-  arrivalDate?: Date;
-  exitDate?: Date;
-  active?: boolean;
-}
+import { PartialType } from '@nestjs/swagger';
+import { CreateExternalVisitDTO } from './crete.dto';
+
+export class UpdateExternalVisitDTO extends PartialType(
+  CreateExternalVisitDTO
+) {}
