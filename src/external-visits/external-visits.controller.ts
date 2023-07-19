@@ -3,7 +3,6 @@ import { MessagePattern } from '@nestjs/microservices';
 import { CreateExternalVisitDTO } from './dto/crete.dto';
 import { QPsExternalIntegrationDTO } from './dto/qps.dto';
 import { ResponseExternalVisitDTO } from './dto/response.dto';
-import { UpdateExternalVisitDTO } from './dto/update.dto';
 import { ExternalVisitsService } from './external-visits.service';
 import { UpdateExternalHeader } from '../visits/interfaces/update-external-header.interface';
 
