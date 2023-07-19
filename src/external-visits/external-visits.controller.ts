@@ -5,6 +5,7 @@ import { QPsExternalIntegrationDTO } from './dto/qps.dto';
 import { ResponseExternalVisitDTO } from './dto/response.dto';
 import { UpdateExternalVisitDTO } from './dto/update.dto';
 import { ExternalVisitsService } from './external-visits.service';
+import { UpdateExternalHeader } from '../visits/interfaces/update-external-header.interface';
 
 @Controller('external-visits')
 export class ExternalVisitsController {
@@ -35,11 +36,11 @@ export class ExternalVisitsController {
   }
 
   @MessagePattern('external_visits_update')
-  async update(
-    id: any,
-    update: UpdateExternalVisitDTO
-  ): Promise<ResponseExternalVisitDTO> {
-    this.logger.debug('Updating external visit', { update });
-    return this.externalVisitsService.update({ id, body: update });
+  async update({
+    id,
+    updateDto
+  }: UpdateExternalHeader): Promise<ResponseExternalVisitDTO> {
+    this.logger.debug('Updating external visit');
+    return this.externalVisitsService.update({ id, body: updateDto });
   }
 }
