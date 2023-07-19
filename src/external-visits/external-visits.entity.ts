@@ -80,4 +80,9 @@ export default class ExternalVisitEntity {
 
   @UpdateDateColumn()
   updatedAt?: Date;
+
+  @Column({
+    default: false
+  })
+  isContractor?: boolean;
 }

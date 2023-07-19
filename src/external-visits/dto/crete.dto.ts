@@ -12,4 +12,5 @@ export class CreateExternalVisitDTO {
   userUUID: string;
   tasks?: string;
   observations?: string;
+  isContractor?: boolean;
 }
