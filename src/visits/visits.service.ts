@@ -1,12 +1,14 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { VisitDTO } from './dto/visit.dto';
-import { Between, LessThan, MoreThan, Repository } from 'typeorm';
-import { checkOutVisitDTO } from './dto/checkout-visit.dto';
+import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+import { CheckOutVisitDTO } from './dto/checkout-visit.dto';
 import { VisitQPs } from './qps/visit.qps';
 import { VisitEntity } from './visits.entity';
-import { ActiveVisitsQuery } from './interfaces/active-visits.query';
+import { ExceptionEntity } from 'src/exceptions/exceptions.entity';
+import { CheckInVisitDTO } from './dto/checkin-visit.dto';
+import { CheckInWhere } from './dto/checkin-visit.where';
+import { UpdateVisitDTO } from './dto/update-visit.dto';
 
 @Injectable()
 export class VisitsService {
@@ -20,12 +22,40 @@ export class VisitsService {
   findAll(visitQPs?: VisitQPs): Promise<VisitEntity[]> {
     // TODO: change QPs to compare checkin and checkout date.
     // Add QP to to get only todays visit.
-    return this.visitRepository.find({
-      where: {
-        ...visitQPs,
-        active: true
+    this.logger.debug('findAll QPs:', { ...visitQPs });
+
+    const where: CheckInWhere = {};
+
+    if (!!visitQPs) {
+      if (!!visitQPs.driverId) where.driverId = visitQPs.driverId;
+      if (!!visitQPs.vehicleId) where.vehicleId = visitQPs.vehicleId;
+      if (!!visitQPs.securityId) where.securityId = visitQPs.securityId;
+
+      if (!!visitQPs.before && !!visitQPs.after) {
+        where.checkIn = Between(visitQPs.after, visitQPs.before);
+      } else if (!!visitQPs.before) {
+        where.checkIn = LessThanOrEqual(visitQPs.before);
+      } else if (!!visitQPs.after) {
+        where.checkIn = MoreThanOrEqual(visitQPs.after);
+      } else if (!!visitQPs.checkIn) {
+        where.checkIn = visitQPs.checkIn;
       }
-    });
+      where.active = visitQPs.active;
+      this.logger.debug('Where', { where });
+
+      if (!visitQPs.active) {
+        delete where.active;
+      }
+    }
+
+    const query = {
+      where: { ...where },
+      relations: ['exception']
+    };
+
+    this.logger.debug('Query', { query });
+
+    return this.visitRepository.find(query);
   }
 
   async findOne(id: number, visitQPs?: VisitQPs): Promise<VisitEntity> {
@@ -48,36 +78,32 @@ export class VisitsService {
     }
   }
 
-  async update(id: number, visitDto: checkOutVisitDTO): Promise<VisitEntity> {
+  async checkout(id: number, visitDto: CheckOutVisitDTO): Promise<VisitEntity> {
     const visit: VisitEntity = await this.visitRepository.findOne(id);
 
-    if (visit) {
-      visit.active = false;
-      this.visitRepository.merge(visit, visitDto);
-      try {
-        return await this.visitRepository.save(visit);
-      } catch (error) {
-        this.logger.error('Error updating visit', { id });
-        throw new RpcException({
-          message: `Ha ocurrido un error al actualizar la visita: ${id}`
-        });
-      }
-    } else {
+    if (!visit) {
       this.logger.error('Error creating visit', { id });
       throw new RpcException({
         message: `No existe una visita con el id: ${id}`
       });
     }
+
+    visit.active = false;
+    this.visitRepository.merge(visit, visitDto);
+    try {
+      return await this.visitRepository.save(visit);
+    } catch (error) {
+      this.logger.error('Error updating visit', { id });
+      throw new RpcException({
+        message: `Ha ocurrido un error al actualizar la visita: ${id}`
+      });
+    }
   }
 
-  async create(
-    securityId: number,
-    driverId: number,
-    vehicleId: number
-  ): Promise<VisitDTO> {
+  async create(dto: CheckInVisitDTO): Promise<VisitEntity> {
     const visitVehicle: VisitEntity[] = await this.visitRepository.find({
       where: {
-        vehicleId: vehicleId,
+        vehicleId: dto.vehicleId,
         active: true
       }
     });
@@ -91,7 +117,7 @@ export class VisitsService {
     }
     const visitDriver: VisitEntity[] = await this.visitRepository.find({
       where: {
-        vehicleId: vehicleId,
+        vehicleId: dto.vehicleId,
         active: true
       }
     });
@@ -103,11 +129,48 @@ export class VisitsService {
       });
     }
 
-    return this.visitRepository.save({
-      driverId,
-      securityId,
-      vehicleId,
-      checkOut: null
-    });
+    const visit: VisitEntity = new VisitEntity();
+
+    if (!!dto.exceptionDto) {
+      this.logger.log('Visit with exception');
+      const exception: ExceptionEntity = new ExceptionEntity();
+      exception.managerUuid = dto.exceptionDto.managerUuid;
+      exception.observations = dto.exceptionDto.observations;
+      visit.exception = exception;
+    }
+
+    visit.arrival_at = dto.arrivalTime;
+    visit.driverId = dto.driverId;
+    // visit.securityId = dto.securityId;
+    visit.userUUID = dto.userUUID;
+    visit.hasSupply = dto.hasSupply;
+    visit.vehicleId = dto.vehicleId;
+    visit.palletsEntrada = dto.palletsEntrada;
+    visit.palletsSalida = dto.palletsSalida;
+    visit.destiny = dto.destiny;
+
+    return this.visitRepository.save(visit);
+  }
+
+  async update(id: number, dto: UpdateVisitDTO): Promise<VisitEntity> {
+    const visit: VisitEntity = await this.visitRepository.findOne(id);
+
+    if (!visit) {
+      this.logger.debug(`Visit ${id} not found`);
+      throw new RpcException({
+        message: 'La visita no existe',
+        status: HttpStatus.NOT_FOUND
+      });
+    }
+
+    this.visitRepository.merge(visit, dto);
+    try {
+      return await this.visitRepository.save(visit);
+    } catch (error) {
+      this.logger.error('Error updating visit', { id });
+      throw new RpcException({
+        message: `Ha ocurrido un error al actualizar la visita: ${id}`
+      });
+    }
   }
 }

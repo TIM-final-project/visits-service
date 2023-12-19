@@ -1,7 +1,6 @@
 export class ExceptionsDTO {
-    vehicleId: number;
-    driverId: number;
-    securityId: number;
-    managerId: number;
-    observations: string;
+  id: number;
+  managerUuid: string;
+  observations: string;
+  created_at: Date;
 }

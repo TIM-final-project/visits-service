@@ -2,12 +2,12 @@ import { Controller, Logger } from '@nestjs/common';
 import { CheckInVisitDTO } from './dto/checkin-visit.dto';
 import { MessagePattern, RpcException } from '@nestjs/microservices';
 import { VisitDTO } from './dto/visit.dto';
-import { checkOutInterface } from './interfaces/checkout.interface';
-import { Header } from './interfaces/header.interface';
+import { CheckOutInterface } from './interfaces/checkout.interface';
+import { FindOneHeader } from './interfaces/findone-header.interface';
 import { VisitQPs } from './qps/visit.qps';
 import { VisitsService } from './visits.service';
-import { ExceptionsDTO } from 'src/exceptions/exception.dto';
 import { ExceptionService } from 'src/exceptions/exception.service';
+import { UpdateHeader } from './interfaces/update-header.interface';
 
 @Controller('visits')
 export class VisitsController {
@@ -27,25 +27,27 @@ export class VisitsController {
   @MessagePattern('visits_find_all_entities')
   async findAllEntities(): Promise<VisitDTO[]> {
     this.logger.debug('Find all');
-    const visits = await this.visitsService.findAll();
+    const visits = await this.visitsService.findAll({ active: true });
     this.logger.debug(visits);
     return visits;
   }
 
   @MessagePattern('visits_find_one')
-  async findOne({ id, visitQPs }: Header): Promise<VisitDTO> {
+  async findOne({ id, visitQPs }: FindOneHeader): Promise<VisitDTO> {
     this.logger.debug('Get Visit by id ', { id, visitQPs });
     return this.visitsService.findOne(id, visitQPs);
   }
 
-  @MessagePattern('visit_create')
+  @MessagePattern('visits_create')
   async create(dto: CheckInVisitDTO): Promise<VisitDTO> {
     this.logger.debug('Attempting to create visit for', dto);
-    return this.visitsService.create(
-      dto.securityId,
-      dto.driverId,
-      dto.vehicleId
-    );
+    return this.visitsService.create(dto);
+  }
+
+  @MessagePattern('visits_update')
+  async update({ id, updateDto }: UpdateHeader): Promise<VisitDTO> {
+    this.logger.debug('Attempting to create visit for', updateDto);
+    return this.visitsService.update(id, updateDto);
   }
 
   @MessagePattern('visits_resource_exit')
@@ -53,10 +55,10 @@ export class VisitsController {
     vehicleId,
     driverId,
     checkOut
-  }: checkOutInterface): Promise<VisitDTO> {
+  }: CheckOutInterface): Promise<VisitDTO> {
     this.logger.debug('Resource exiting ', { vehicleId, driverId, checkOut });
     try {
-      const checkIns = await this.visitsService.findAll();
+      const checkIns = await this.visitsService.findAll({ active: true });
       if (!checkIns.length) {
         this.logger.error(
           'There are no checkIns from the pair vehicle/driver today.',
@@ -73,7 +75,7 @@ export class VisitsController {
       }
       const { id } = checkIns[0];
       this.logger.debug('Previous checkIn: ', checkIns[0]);
-      return this.visitsService.update(id, { id, checkOut });
+      return this.visitsService.checkout(id, { id, checkOut });
     } catch (error) {
       this.logger.error('Error CheckingOut visit', {
         vehicleId,
@@ -81,22 +83,8 @@ export class VisitsController {
         checkOut
       });
       throw new RpcException({
-        message: `Ha ocurrido un error al registrar la salida`
+        message: `Ha ocurrido un error al registrar la salida: ` + error.message
       });
     }
-  }
-
-  @MessagePattern('visits_exception')
-  async createException(dto: ExceptionsDTO): Promise<VisitDTO> {
-    this.logger.debug('Attempting to create visit for', dto);
-    const visit: VisitDTO = await this.visitsService.create(
-      dto.securityId,
-      dto.driverId,
-      dto.vehicleId
-    );
-
-    this.exceptionsService.create(visit.id, dto.managerId, dto.observations);
-
-    return visit;
   }
 }

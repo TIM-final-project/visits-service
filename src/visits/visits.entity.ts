@@ -1,7 +1,9 @@
+import { ExceptionEntity } from 'src/exceptions/exceptions.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   Timestamp,
   UpdateDateColumn
@@ -22,9 +24,9 @@ export class VisitEntity {
   driverId: number;
 
   @Column({
-    nullable: false
+    nullable: true
   })
-  securityId: number;
+  userUUID: string;
 
   @Column({
     nullable: false,
@@ -46,9 +48,37 @@ export class VisitEntity {
   @UpdateDateColumn()
   updated_at: Date;
 
+  @Column({ nullable: false, type: 'timestamp' })
+  arrival_at: Date;
+
+  @Column({
+    nullable: true
+  })
+  palletsEntrada?: number;
+
+  @Column({
+    nullable: true
+  })
+  palletsSalida?: number;
+
+  @Column({
+    nullable: true
+  })
+  destiny?: string;
+
   @Column({
     nullable: false,
     default: true
   })
   active: boolean;
+
+  @Column({
+    nullable: true
+  })
+  hasSupply?: boolean;
+
+  @OneToOne(() => ExceptionEntity, (exception) => exception.visit, {
+    cascade: true
+  })
+  exception: ExceptionEntity;
 }
