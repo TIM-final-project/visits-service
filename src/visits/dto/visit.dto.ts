@@ -32,4 +32,6 @@ export class VisitDTO {
   hasSupply?: boolean;
 
   exception: ExceptionsDTO;
+
+  plant: number;
 }

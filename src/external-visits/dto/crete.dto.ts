@@ -13,4 +13,5 @@ export class CreateExternalVisitDTO {
   tasks?: string;
   observations?: string;
   isContractor?: boolean;
+  plant:number;
 }
