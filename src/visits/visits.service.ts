@@ -148,6 +148,7 @@ export class VisitsService {
     visit.palletsEntrada = dto.palletsEntrada;
     visit.palletsSalida = dto.palletsSalida;
     visit.destiny = dto.destiny;
+    visit.plant = dto.plant;
 
     return this.visitRepository.save(visit);
   }

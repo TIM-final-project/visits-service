@@ -9,4 +9,5 @@ export class ResponseExternalVisitDTO {
   exitDate?: Date;
   createdAt?: Date;
   updatedAt?: Date;
+  plant: number;
 }
