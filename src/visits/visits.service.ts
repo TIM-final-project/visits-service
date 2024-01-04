@@ -139,17 +139,21 @@ export class VisitsService {
       visit.exception = exception;
     }
 
-    visit.arrival_at = dto.arrivalTime;
-    visit.driverId = dto.driverId;
-    // visit.securityId = dto.securityId;
-    visit.userUUID = dto.userUUID;
-    visit.hasSupply = dto.hasSupply;
-    visit.vehicleId = dto.vehicleId;
-    visit.palletsEntrada = dto.palletsEntrada;
-    visit.palletsSalida = dto.palletsSalida;
-    visit.destiny = dto.destiny;
 
-    return this.visitRepository.save(visit);
+    dto.arrivalTime.forEach(arrivalTime => {
+      visit.arrival_at = arrivalTime;
+      visit.driverId = dto.driverId;
+      // visit.securityId = dto.securityId;
+      visit.userUUID = dto.userUUID;
+      visit.hasSupply = dto.hasSupply;
+      visit.vehicleId = dto.vehicleId;
+      visit.palletsEntrada = dto.palletsEntrada;
+      visit.palletsSalida = dto.palletsSalida;
+      visit.destiny = dto.destiny;
+      this.visitRepository.save(visit);
+    })
+
+    return visit;
   }
 
   async update(id: number, dto: UpdateVisitDTO): Promise<VisitEntity> {

@@ -4,7 +4,7 @@ export class CheckInVisitDTO {
   vehicleId: number;
   driverId: number;
   userUUID: string;
-  arrivalTime: Date;
+  arrivalTime: Date[];
   palletsEntrada: number;
   palletsSalida: number;
   destiny: string;
