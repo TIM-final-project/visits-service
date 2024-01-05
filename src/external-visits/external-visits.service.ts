@@ -56,9 +56,18 @@ export class ExternalVisitsService {
     }
   }
 
-  create(create: CreateExternalVisitDTO): Promise<ExternalVisitEntity> {
+  async create(create: CreateExternalVisitDTO): Promise<ExternalVisitEntity[]> {
     try {
-      return this.externalVisitRepository.save(create);
+      const scheduledDates: Date[] = create.scheduledDate;
+
+      let externalVisits: ExternalVisitEntity[] = new Array()
+      for (const date of scheduledDates) {
+        const { scheduledDate, ...externalVisit} = create;
+        const savedExternalVisit: ExternalVisitEntity = await this.externalVisitRepository.save({...externalVisit, scheduledDate: date})
+        externalVisits.push(savedExternalVisit);
+      }
+
+      return externalVisits;
     } catch (error) {
       this.logger.error('Error creating external visit', { error });
       throw new RpcException({
