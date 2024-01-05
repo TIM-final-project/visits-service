@@ -2,7 +2,7 @@ export class CreateExternalVisitDTO {
   name: string;
   surname: string;
   cuit: string;
-  scheduledDate: Date;
+  scheduledDate: Date[];
   arrivalDate?: Date;
   exitDate?: Date;
   company?: string;

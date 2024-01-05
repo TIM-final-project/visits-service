@@ -29,7 +29,7 @@ export class ExternalVisitsController {
   @MessagePattern('external_visits_create')
   async create(
     create: CreateExternalVisitDTO
-  ): Promise<ResponseExternalVisitDTO> {
+  ): Promise<ResponseExternalVisitDTO[]> {
     this.logger.debug('Creating external visit', { create });
     return this.externalVisitsService.create(create);
   }
