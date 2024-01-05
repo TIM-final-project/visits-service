@@ -100,7 +100,7 @@ export class VisitsService {
     }
   }
 
-  async create(dto: CheckInVisitDTO): Promise<VisitEntity> {
+  async create(dto: CheckInVisitDTO): Promise<VisitEntity[]> {
     const visitVehicle: VisitEntity[] = await this.visitRepository.find({
       where: {
         vehicleId: dto.vehicleId,
@@ -139,7 +139,7 @@ export class VisitsService {
       visit.exception = exception;
     }
 
-
+    const visits: VisitEntity []=[];
     dto.arrivalTime.forEach(arrivalTime => {
       visit.arrival_at = arrivalTime;
       visit.driverId = dto.driverId;
@@ -151,9 +151,10 @@ export class VisitsService {
       visit.palletsSalida = dto.palletsSalida;
       visit.destiny = dto.destiny;
       this.visitRepository.save(visit);
+      visits.push(visit);
     })
-
-    return visit;
+    
+    return visits;
   }
 
   async update(id: number, dto: UpdateVisitDTO): Promise<VisitEntity> {

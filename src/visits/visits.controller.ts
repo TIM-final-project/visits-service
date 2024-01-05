@@ -39,7 +39,7 @@ export class VisitsController {
   }
 
   @MessagePattern('visits_create')
-  async create(dto: CheckInVisitDTO): Promise<VisitDTO> {
+  async create(dto: CheckInVisitDTO): Promise<VisitDTO[]> {
     this.logger.debug('Attempting to create visit for', dto);
     return this.visitsService.create(dto);
   }
