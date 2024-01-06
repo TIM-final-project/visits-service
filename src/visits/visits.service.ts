@@ -30,6 +30,7 @@ export class VisitsService {
       if (!!visitQPs.driverId) where.driverId = visitQPs.driverId;
       if (!!visitQPs.vehicleId) where.vehicleId = visitQPs.vehicleId;
       if (!!visitQPs.securityId) where.securityId = visitQPs.securityId;
+      if (!!visitQPs.plant) where.plant = visitQPs.plant;
 
       if (!!visitQPs.before && !!visitQPs.after) {
         where.checkIn = Between(visitQPs.after, visitQPs.before);
