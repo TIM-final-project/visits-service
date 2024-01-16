@@ -10,4 +10,5 @@ export class CheckInVisitDTO {
   destiny: string;
   hasSupply: boolean;
   exceptionDto?: ExceptionsDTO;
+  plant: number;
 }

@@ -30,6 +30,7 @@ export class VisitsService {
       if (!!visitQPs.driverId) where.driverId = visitQPs.driverId;
       if (!!visitQPs.vehicleId) where.vehicleId = visitQPs.vehicleId;
       if (!!visitQPs.securityId) where.securityId = visitQPs.securityId;
+      if (!!visitQPs.plant) where.plant = visitQPs.plant;
 
       if (!!visitQPs.before && !!visitQPs.after) {
         where.checkIn = Between(visitQPs.after, visitQPs.before);
@@ -148,6 +149,7 @@ export class VisitsService {
     visit.palletsEntrada = dto.palletsEntrada;
     visit.palletsSalida = dto.palletsSalida;
     visit.destiny = dto.destiny;
+    visit.plant = dto.plant;
 
     return this.visitRepository.save(visit);
   }

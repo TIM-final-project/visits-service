@@ -77,6 +77,11 @@ export class VisitEntity {
   })
   hasSupply?: boolean;
 
+  @Column({
+    nullable: false
+  })
+  plant: number;
+
   @OneToOne(() => ExceptionEntity, (exception) => exception.visit, {
     cascade: true
   })

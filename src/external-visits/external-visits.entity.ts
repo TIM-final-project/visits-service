@@ -85,4 +85,9 @@ export default class ExternalVisitEntity {
     default: false
   })
   isContractor?: boolean;
+
+  @Column({
+    nullable: false,
+  })
+  plant: number;
 }

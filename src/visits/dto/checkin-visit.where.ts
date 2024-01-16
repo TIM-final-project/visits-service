@@ -6,4 +6,5 @@ export class CheckInWhere {
   securityId?: number;
   checkIn?: Date | FindOperator<any>;
   active?: boolean;
+  plant?: number;
 }

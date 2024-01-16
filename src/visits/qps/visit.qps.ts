@@ -7,4 +7,5 @@ export class VisitQPs {
   checkIn?: Date;
   checkOut?: Date;
   active?: boolean;
+  plant?: number;
 }

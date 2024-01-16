@@ -9,4 +9,5 @@ export class QPsExternalIntegrationDTO {
   exitDate?: Date;
   before?: Date;
   after?: Date;
+  plant?: number;
 }
