@@ -6,7 +6,6 @@ import { CheckOutInterface } from './interfaces/checkout.interface';
 import { FindOneHeader } from './interfaces/findone-header.interface';
 import { VisitQPs } from './qps/visit.qps';
 import { VisitsService } from './visits.service';
-import { ExceptionService } from 'src/exceptions/exception.service';
 import { UpdateHeader } from './interfaces/update-header.interface';
 
 @Controller('visits')
@@ -15,7 +14,6 @@ export class VisitsController {
 
   constructor(
     private visitsService: VisitsService,
-    private exceptionsService: ExceptionService
   ) {}
 
   @MessagePattern('visits_find_all')
@@ -25,9 +23,9 @@ export class VisitsController {
   }
 
   @MessagePattern('visits_find_all_entities')
-  async findAllEntities(): Promise<VisitDTO[]> {
+  async findAllEntities({query}): Promise<VisitDTO[]> {
     this.logger.debug('Find all');
-    const visits = await this.visitsService.findAll({ active: true });
+    const visits = await this.visitsService.findAll({ ...query, active: true });
     this.logger.debug(visits);
     return visits;
   }

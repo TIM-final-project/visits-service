@@ -6,7 +6,6 @@ export class UpdateVisitDTO extends PartialType(
     'vehicleId',
     'driverId',
     'userUUID',
-    'exceptionDto',
     'arrivalTime',
     'plant'
   ] as const)

@@ -5,7 +5,6 @@ import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { CheckOutVisitDTO } from './dto/checkout-visit.dto';
 import { VisitQPs } from './qps/visit.qps';
 import { VisitEntity } from './visits.entity';
-import { VisitExceptionEntity } from 'src/exceptions/exceptions.entity';
 import { CheckInVisitDTO } from './dto/checkin-visit.dto';
 import { CheckInWhere } from './dto/checkin-visit.where';
 import { UpdateVisitDTO } from './dto/update-visit.dto';
@@ -51,7 +50,6 @@ export class VisitsService {
 
     const query = {
       where: { ...where },
-      relations: ['exception']
     };
 
     this.logger.debug('Query', { query });
@@ -131,14 +129,6 @@ export class VisitsService {
     }
 
     const visit: VisitEntity = new VisitEntity();
-
-    if (!!dto.exceptionDto) {
-      this.logger.log('Visit with exception');
-      const exception: VisitExceptionEntity = new VisitExceptionEntity();
-      exception.managerUuid = dto.exceptionDto.managerUuid;
-      exception.observations = dto.exceptionDto.observations;
-      visit.exception = exception;
-    }
 
     visit.arrival_at = dto.arrivalTime;
     visit.driverId = dto.driverId;

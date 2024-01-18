@@ -1,6 +1,4 @@
 import { Timestamp } from 'typeorm';
-import { ExceptionsDTO } from '../../exceptions/exception.dto';
-import { VisitExceptionEntity } from '../../exceptions/exceptions.entity';
 
 export class VisitDTO {
   id: number;
@@ -30,8 +28,6 @@ export class VisitDTO {
   active: boolean;
 
   hasSupply?: boolean;
-
-  exception: ExceptionsDTO;
 
   plant: number;
 }

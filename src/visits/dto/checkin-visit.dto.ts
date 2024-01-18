@@ -1,5 +1,3 @@
-import { ExceptionsDTO } from 'src/exceptions/exception.dto';
-
 export class CheckInVisitDTO {
   vehicleId: number;
   driverId: number;
@@ -9,6 +7,5 @@ export class CheckInVisitDTO {
   palletsSalida: number;
   destiny: string;
   hasSupply: boolean;
-  exceptionDto?: ExceptionsDTO;
   plant: number;
 }
