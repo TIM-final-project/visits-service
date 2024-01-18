@@ -2,7 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { VisitEntity } from "src/visits/visits.entity";
 import { Repository } from "typeorm";
-import { ExceptionEntity } from "./exceptions.entity";
+import { VisitExceptionEntity } from "./exceptions.entity";
 
 @Injectable()
 export class ExceptionService {
@@ -10,11 +10,11 @@ export class ExceptionService {
   private readonly logger = new Logger(ExceptionService.name);
 
   constructor(
-    @InjectRepository(ExceptionEntity)
-    private exceptionsRepository: Repository<ExceptionEntity>
+    @InjectRepository(VisitExceptionEntity)
+    private exceptionsRepository: Repository<VisitExceptionEntity>
   ) {}
   
-  findAll(visitId?: number): Promise<ExceptionEntity[]> {
+  findAll(visitId?: number): Promise<VisitExceptionEntity[]> {
     return this.exceptionsRepository.find({
       where: {
         visitId

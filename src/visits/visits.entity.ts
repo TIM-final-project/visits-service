@@ -1,4 +1,4 @@
-import { ExceptionEntity } from 'src/exceptions/exceptions.entity';
+import { VisitExceptionEntity } from 'src/exceptions/exceptions.entity';
 import {
   Column,
   CreateDateColumn,
@@ -82,8 +82,8 @@ export class VisitEntity {
   })
   plant: number;
 
-  @OneToOne(() => ExceptionEntity, (exception) => exception.visit, {
+  @OneToOne(() => VisitExceptionEntity, (exception) => exception.visit, {
     cascade: true
   })
-  exception: ExceptionEntity;
+  exception: VisitExceptionEntity;
 }

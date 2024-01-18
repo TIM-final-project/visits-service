@@ -3,7 +3,7 @@ import { MessagePattern } from "@nestjs/microservices";
 import { plainToInstance } from "class-transformer";
 import { ExceptionsDTO } from "./exception.dto";
 import { ExceptionService } from "./exception.service";
-import { ExceptionEntity } from "./exceptions.entity";
+import { VisitExceptionEntity } from "./exceptions.entity";
 
 @Controller('exceptions')
 export class ExceptionController{
@@ -16,7 +16,7 @@ export class ExceptionController{
     @MessagePattern('exceptions_find_all')
     async findAll(visitId?: number): Promise<ExceptionsDTO[]> {
       this.logger.debug('Find all', { visitId });
-      const exceptions : ExceptionEntity[] = await this.exceptionsService.findAll(visitId);
+      const exceptions : VisitExceptionEntity[] = await this.exceptionsService.findAll(visitId);
 
       return exceptions.map(exception => plainToInstance(ExceptionsDTO, exception));
     }

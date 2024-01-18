@@ -1,6 +1,6 @@
 import { Timestamp } from 'typeorm';
 import { ExceptionsDTO } from '../../exceptions/exception.dto';
-import { ExceptionEntity } from '../../exceptions/exceptions.entity';
+import { VisitExceptionEntity } from '../../exceptions/exceptions.entity';
 
 export class VisitDTO {
   id: number;

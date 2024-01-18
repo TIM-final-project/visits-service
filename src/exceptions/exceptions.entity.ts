@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class ExceptionEntity {
+export class VisitExceptionEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
