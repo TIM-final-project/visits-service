@@ -90,6 +90,7 @@ export class ExternalVisitsService {
           status: HttpStatus.NOT_FOUND
         });
       }
+      body.scheduledDate = body.scheduledDate[0]
       this.externalVisitRepository.merge(visit, body);
       return this.externalVisitRepository.save(visit);
     } catch (error) {
