@@ -14,6 +14,7 @@ import ExternalVisitEntity from './external-visits.entity';
 import { omit } from 'lodash';
 import { UpdateExternalVisitDTO } from './dto/update.dto';
 import { ResponseExternalVisitDTO } from './dto/response.dto';
+import { scheduled } from 'rxjs';
 
 @Injectable()
 export class ExternalVisitsService {
@@ -90,7 +91,9 @@ export class ExternalVisitsService {
           status: HttpStatus.NOT_FOUND
         });
       }
-      body.scheduledDate = body.scheduledDate[0]
+      if(!!body.scheduledDate && body.scheduledDate.lenght > 0){
+        body.scheduledDate = body.scheduledDate[0]
+      }
       this.externalVisitRepository.merge(visit, body);
       return this.externalVisitRepository.save(visit);
     } catch (error) {
